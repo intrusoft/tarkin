@@ -44,19 +44,6 @@ REGION_NAME = 'test'
 RUN_TIMEOUT = 60
 PING_TIMEOUT = 120
 
-"""
-if 'EC2_ACCESS_KEY' in os.environ and 'EC2_SECRET_KEY' in os.environ:
-    AWS_ACCESS_KEY_ID = os.environ['EC2_ACCESS_KEY']
-    AWS_SECRET_ACCESS_KEY = os.environ['EC2_SECRET_KEY']
-    AWS_HOST = os.environ['EC2_URL'].split('/')[2].split(':')[0]
-    AWS_PORT = int(os.environ['EC2_URL'].split('/')[2].split(':')[1])
- 
-else:
-    print "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set"
-    print "You can do this by sourcing novarc or setting the environment variables"
-    sys.exit()
-"""
-
 class vmrunner():
 
     def __init__(self, ami=None, aki=None, ari=None):
