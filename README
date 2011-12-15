@@ -1,0 +1,38 @@
+Goals:
+
+Unit tests are great, but sometimes we need system end-to-end tests to trigger
+real-world production bugs in Nova. 
+
+This was originally created to trigger race conditions and synchronization
+bugs in Nova with regard to the layer-3 network plugin project. 
+
+Short term goals:
+1. A script that can fire up a ton of VMs, concurrently over a long period of time
+2. A script that can verify that Nova security groups are implemented correctly
+3. A script that can verify that a VM can't reach internal ops related resources
+
+Future?
+1. Cloud performance / profiling metrics
+2. Analyzing accuracy of various scheduling algorithms
+3. Find scaling boundaries 
+4. Verify NAT operations
+5. Record network and disk benchmarks at various loads
+6. Blast various API calls to reach their breaking-points
+
+Implementation:
+-Python + Boto scripts 
+
+Requirements:
+- python
+- boto
+- a Nova deployment
+
+install:
+apt-get python-boto
+
+To run:
+python name-of-script.py
+
+
+
+
