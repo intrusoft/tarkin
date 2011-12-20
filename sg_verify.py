@@ -16,6 +16,8 @@ KEY_PATH = '/root/test.pem'
 # test how quick rules get applied to running VMs
 # create tons of security groups until breaks
 
+# FYI on a slow machine this test can take 5 - 10 minutes to complete
+
 # Some sane defaults
 INSTANCE_TYPE = 'm1.tiny'
 REGION_NAME = 'test'
