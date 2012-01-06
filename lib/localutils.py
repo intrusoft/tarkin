@@ -4,8 +4,9 @@ import time
 
 start_time = time.time()
 
+
 def log(msg):
-    line = "%d %s" % (int(time.time() - start_time), msg) 
+    line = "%d %s" % (int(time.time() - start_time), msg)
     print line
 
 
@@ -19,12 +20,13 @@ def checkping(host):
 def launch_vm(self):
     log("Launching VM")
     image = self.ec2_conn.get_image(_ami)
-    reservation = image.run(kernel_id=_aki, 
-                            ramdisk_id=_ari, 
-                            instance_type=INSTANCE_TYPE, 
+    reservation = image.run(kernel_id=_aki,
+                            ramdisk_id=_ari,
+                            instance_type=INSTANCE_TYPE,
                             key_name=KEYPAIR_NAME)
 
     return reservation.instances[0]
+
 
 def block_till_running(self, inst):
     log("Waiting for instance %s to be in running state " % inst.id)
@@ -36,16 +38,15 @@ def block_till_running(self, inst):
             break
         time.sleep(1)
     return result
-    
-def block_till_ping(self, host):
+
+
+def block_till_ping(self, host, wait=60):
     log("Waiting for instance %s to be pingable " % host)
     result = False
-    for x in range(60):
+    for x in range(wait):
         if checkping(host):
             result = True
             break
         time.sleep(1)
     log("Instance %s is  pingable " % host)
     return result
-
-
