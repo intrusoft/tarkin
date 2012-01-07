@@ -37,7 +37,7 @@ class PingAll():
 
 
     def async_ping(self,host):
-        val = utils.block_till_ping(self,host,60);
+        val = utils.block_till_ping(self,host,999);
         self._tests.append(val)
 
     def get_finished_tests(self):
