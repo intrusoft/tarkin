@@ -11,7 +11,7 @@ import eventlet
 import os
 import sys
 #import re
-#import time
+import time
 
 import lib.localutils as utils
 
@@ -27,6 +27,7 @@ KEYPAIR_NAME = 'test'
 class PingAll():
     def __init__(self, region, awshost, awsaccesskey, awssecretkey, awsport):
         utils.log("Connecting to end-point")
+	self._tests= []
         self.region = RegionInfo(None, region, awshost)
         self.ec2_conn = boto.connect_ec2(awsaccesskey, awssecretkey,
                                          region=self.region,
@@ -34,21 +35,50 @@ class PingAll():
                                          is_secure=False,
                                          path='/services/Cloud')
 
+
+    def async_ping(self,host):
+        val = utils.block_till_ping(self,host,60);
+        self._tests.append(val)
+
+    def get_finished_tests(self):
+        return len(self._tests)
+
+
+    def wait_for_tests(self,count):
+        current_count = 0
+        while(True):    # loop until we are done with all the tests
+            tests_run = self.get_finished_tests()
+            if current_count < tests_run:
+                print "Tests run: %d / %d " % (tests_run, count)
+                current_count = tests_run
+            
+            if tests_run == count:
+                break
+            time.sleep(2)
+
+
+
     def run(self):
         #get list of running VMs
         reservations = self.ec2_conn.get_all_instances()
+        count =  len(reservations)
+        utils.log("%d VMs" % count)
 
-        try:
-            for reservation in reservations:
-                for instance in reservation.instances:
-                    instance.update()
-                    if instance.state != 'running':
-                        continue
-                    #utils.log("start pinging %s"  % instance.public_dns_name)
-                    eventlet.spawn(utils.block_till_ping, self,
-                                   instance.public_dns_name, 9999)
-        except (SystemExit, KeyboardInterrupt):
-            return 0
+        #ping each VM
+        for reservation in reservations:
+            for instance in reservation.instances:
+                instance.update()
+                if instance.state != 'running':
+                    print "%s in bad state" % instance.public_dns_name
+                    count = count - 1
+                    continue
+                #utils.log("start pinging %s"  % instance.public_dns_name)
+                eventlet.spawn(self.async_ping,
+                               instance.public_dns_name)
+
+    
+        #wait for tests
+        self.wait_for_tests(count)
 
 
 if __name__ == '__main__':
