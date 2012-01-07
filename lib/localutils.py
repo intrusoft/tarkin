@@ -6,7 +6,7 @@ start_time = time.time()
 
 
 def log(msg):
-    line = "%d %s" % (int(time.time() - start_time), msg)
+    line = "[%.1f sec] %s" % (int(time.time() - start_time), msg)
     print line
 
 
@@ -41,7 +41,7 @@ def block_till_running(self, inst):
 
 
 def block_till_ping(self, host, wait=60):
-    log("Waiting for instance %s to be pingable " % host)
+    #log("Waiting for instance %s to be pingable " % host)
     result = False
     for x in range(wait):
         if checkping(host):
