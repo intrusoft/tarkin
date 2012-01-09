@@ -66,7 +66,7 @@ class PingAll():
         #ping each VM
         for reservation in reservations:
             for instance in reservation.instances:
-                instance.update()
+                #instance.update()
                 if instance.state != 'running':
                     utils.log("Instance %s in bad state" % instance)
                     continue
