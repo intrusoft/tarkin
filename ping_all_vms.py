@@ -4,7 +4,7 @@
 
 This script measures how long it takes to ping each running VM.
 
-Designed to latency when restarting nova-networking
+Designed to measure latency when restarting nova-networking
 
 """
 import eventlet
