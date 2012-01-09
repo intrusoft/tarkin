@@ -49,7 +49,7 @@ class PingAll():
         while(True):    # loop until we are done with all the tests
             tests_run = self.get_finished_tests()
             if current_count < tests_run:
-                print "Tests run: %d / %d " % (tests_run, count)
+                utils.log("Tests run: %d / %d " % (tests_run, count))
                 current_count = tests_run
             
             if tests_run == count:
@@ -61,21 +61,21 @@ class PingAll():
     def run(self):
         #get list of running VMs
         reservations = self.ec2_conn.get_all_instances()
-        count =  len(reservations)
-        utils.log("%d VMs" % count)
+        count = 0 
 
         #ping each VM
         for reservation in reservations:
             for instance in reservation.instances:
                 instance.update()
                 if instance.state != 'running':
-                    print "%s in bad state" % instance.public_dns_name
-                    count = count - 1
+                    utils.log("Instance %s in bad state" % instance)
                     continue
                 #utils.log("start pinging %s"  % instance.public_dns_name)
+                count+=1
                 eventlet.spawn(self.async_ping,
                                instance.public_dns_name)
 
+        utils.log("%d VMs" % count)
     
         #wait for tests
         self.wait_for_tests(count)
