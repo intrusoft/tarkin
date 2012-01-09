@@ -6,7 +6,7 @@ start_time = time.time()
 
 
 def log(msg):
-    line = "[%.1f sec] %s" % (int(time.time() - start_time), msg)
+    line = "[%.1f sec] %s" % (time.time() - start_time, msg)
     print line
 
 
