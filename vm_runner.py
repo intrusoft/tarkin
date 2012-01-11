@@ -41,8 +41,8 @@ from eventlet import *
 # Some sane defaults
 INSTANCE_TYPE = 'm1.tiny'
 REGION_NAME = 'test'
-RUN_TIMEOUT = 60
-PING_TIMEOUT = 120
+RUN_TIMEOUT = 300
+PING_TIMEOUT = 300
 
 class vmrunner():
 
