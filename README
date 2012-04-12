@@ -28,11 +28,7 @@ Requirements:
 - a Nova deployment
 
 install:
-apt-get python-boto
+apt-get install python-boto
 
 To run:
 python name-of-script.py
-
-
-
-

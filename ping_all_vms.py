@@ -36,8 +36,8 @@ class PingAll():
                                          path='/services/Cloud')
 
 
-    def async_ping(self,host):
-        val = utils.block_till_ping(self,host,999);
+    def async_ping(self,instance):
+        val = utils.block_till_ping(self,instance,999);
         self._tests.append(val)
 
     def get_finished_tests(self):
@@ -73,7 +73,7 @@ class PingAll():
                 #utils.log("start pinging %s"  % instance.public_dns_name)
                 count+=1
                 eventlet.spawn(self.async_ping,
-                               instance.private_ip_address)
+                               instance)
 
         utils.log("%d VMs" % count)
     
