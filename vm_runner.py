@@ -41,8 +41,8 @@ from eventlet import *
 # Some sane defaults
 INSTANCE_TYPE = 'm1.tiny'
 REGION_NAME = 'test'
-RUN_TIMEOUT = 300
-PING_TIMEOUT = 300
+RUN_TIMEOUT = 900
+PING_TIMEOUT = 900
 
 class vmrunner():
 
@@ -134,16 +134,16 @@ class vmrunner():
                         # ping till up
                         for x in range(PING_TIMEOUT):
                             time.sleep(1)
-                            if self._checkping(instance.public_dns_name):
+                            if self._checkping(instance.private_ip_address):
                                 ping_time = self._delta(start_time, time.time())
                                 break
-                        if self._checkping(instance.public_dns_name):
+                        if self._checkping(instance.private_ip_address):
                             print "%s state: pingable" % instance_id
                             print "%s Time till Runnning: %d, Time till Ping: %d " % (instance.id, run_time, ping_time) 
                             print "%s terminating instance" % instance_id
                             test_result = True
                             try:
-                                instance.stop()   # bug in boto, exception is always triggered here
+                                instance.terminate()   # bug in boto, exception is always triggered here
                             except Exception, e:
                                 pass
                         else:

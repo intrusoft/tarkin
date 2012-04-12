@@ -73,7 +73,7 @@ class PingAll():
                 #utils.log("start pinging %s"  % instance.public_dns_name)
                 count+=1
                 eventlet.spawn(self.async_ping,
-                               instance.public_dns_name)
+                               instance.private_ip_address)
 
         utils.log("%d VMs" % count)
     
