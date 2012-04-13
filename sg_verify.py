@@ -9,7 +9,7 @@ from lib.sshutils import SSHCommand
 import boto
 
 #TODO(jogo) remove default
-KEY_PATH = '/home/cloudscaling/test.pem'
+KEY_PATH = '/root/test.pem'
 
 # test how quick rules get applied to running VMs
 # create tons of security groups until breaks
