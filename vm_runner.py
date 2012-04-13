@@ -31,9 +31,8 @@ import sys
 import time
 
 import boto
-from boto.ec2.regioninfo import RegionInfo
 
-import lib.localutils as utils
+import lib.common as utils
 
 # important eventlet stuff
 from eventlet import patcher
@@ -45,12 +44,8 @@ REGION_NAME = 'test'
 
 class vmrunner():
 
-    def __init__(self, ami=None ):
-        self._tests = []
-        if ami:
-            self._ami = ami
-        else:
-           raise Exception("AMI missing") 
+    def __init__(self, ami ):
+        self._ami = ami
 
     def runner(self, workers, iterations):
         """ main loop function """
@@ -58,13 +53,7 @@ class vmrunner():
         for _ in range(workers):    # spawn a green-thread for each worker
             spawn(self.runx, iterations)
 
-        while(True):    # loop until we are done with all the tests
-            tests_run = len(utils.get_records())
-            print "Tests run: %d / %d " % (tests_run, iterations * workers)
-            
-            if tests_run == iterations * workers:
-                break
-            time.sleep(5)
+        utils.wait_for_tests(iterations * workers)
 
     def runx(self, iterations):
         """ loop for individual worker so it does the specified number of iterations """
@@ -75,8 +64,7 @@ class vmrunner():
         """ function that starts all the tests """
 
         # connect to Nova
-        region = RegionInfo(None, REGION_NAME, AWS_HOST)
-        ec2_conn = boto.connect_ec2(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, region=region, port=AWS_PORT, is_secure=False, path='/services/Cloud')
+        ec2_conn = boto.connect_ec2(**utils.get_rc_credentials())
 
         # test data defaults
         test_result = False
@@ -104,29 +92,16 @@ class vmrunner():
         utils.add_record( {'id': instance_id, 'test_result': test_result, 'run_time': run_time, 'ping_time': ping_time}  )     
         
 if __name__ == '__main__':
-    if 'EC2_ACCESS_KEY' in os.environ and 'EC2_SECRET_KEY' in os.environ:
-        AWS_ACCESS_KEY_ID = os.environ['EC2_ACCESS_KEY']
-        AWS_SECRET_ACCESS_KEY = os.environ['EC2_SECRET_KEY']
-        AWS_HOST = os.environ['EC2_URL'].split('/')[2].split(':')[0]
-        AWS_PORT = int(os.environ['EC2_URL'].split('/')[2].split(':')[1])
-
-    else:
-        print "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set"
-        print "You can do this by sourcing novarc or setting the environment variables"
-        sys.exit()
-
-    if len(sys.argv) > 2:
-            
-        ami = None
-
+    try:
         if len(sys.argv) > 3: 
             ami = sys.argv[3]
-
+	else: raise Exception()
         vm = vmrunner(ami)
         vm.runner(int(sys.argv[1]), int(sys.argv[2]))
-        print "\n" 
-        for x in utils.get_records():
-            print x
-    else:
+    except Exception:
         print "Usage: ./vm_runner.py number_of_workers number_of_iterations ami"
         print "Make sure you have sourced novarc to set env variables"
+        exit(1)
+    print "\n" 
+    for x in utils.get_records():
+        print x
