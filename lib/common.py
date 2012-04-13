@@ -109,6 +109,6 @@ def wait_for_tests(number_of_tests):
         tests_run = len(get_records())
         log("Tests run: %d / %d " % (tests_run, number_of_tests))
         
-        if tests_run == number_of_tests:
+        if tests_run >= number_of_tests:
             break
         time.sleep(2)

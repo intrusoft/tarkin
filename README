@@ -3,13 +3,20 @@ Goals:
 Unit tests are great, but sometimes we need system end-to-end tests to trigger
 real-world production bugs in Nova. 
 
+Background:
+
 This was originally created to trigger race conditions and synchronization
 bugs in Nova with regard to the layer-3 network plugin project. 
 
-Short term goals:
-1. A script that can fire up a ton of VMs, concurrently over a long period of time
-2. A script that can verify that Nova security groups are implemented correctly
-3. A script that can verify that a VM can't reach internal ops related resources
+Current tests:
+
+1. Fire up a ton of VMs, concurrently over a long period of time [vm_runner.py]
+2. Verify that Nova security groups are implemented correctly [sg_verify.py]
+3. Verify that a VM can't reach internal ops related resources [sg_rogue_vm.py]
+4. Make sure all running VMs are ping-able [ping_all_vms.py]
+5. Fire up a ton of VMs, concurrently over a long period of time and randomly reboot/stop&start them several times
+6. Concurrently Generate and Destroy tons of ssh certs [key_stress.py]
+    
 
 Future?
 1. Cloud performance / profiling metrics
@@ -20,7 +27,7 @@ Future?
 6. Blast various API calls to reach their breaking-points
 
 Implementation:
--Python + Boto scripts 
+- Python + Boto scripts 
 
 Requirements:
 - python
