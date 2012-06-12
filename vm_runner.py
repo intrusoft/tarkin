@@ -47,20 +47,26 @@ class vmrunner():
     def __init__(self, ami ):
         self._ami = ami
 
-    def runner(self, workers, iterations):
+    def runner(self, workers, iterations, logfile):
         """ main loop function """
-
+        try: 
+            LOG = open(logfile, "w")
+            LOG.write('Instance ID, Test Result, Run Time, Ping Time\n')
+        except:
+            print "opening %s failed!\n" % logfile 
+            exit(1)
         for _ in range(workers):    # spawn a green-thread for each worker
-            spawn(self.runx, iterations)
+            spawn(self.runx, iterations, LOG)
 
         utils.wait_for_tests(iterations * workers)
-
-    def runx(self, iterations):
+        LOG.close()
+ 
+    def runx(self, iterations, LOG):
         """ loop for individual worker so it does the specified number of iterations """
         for _ in range(iterations):
-            self.run()
+            self.run(LOG)
 
-    def run(self):
+    def run(self, LOG):
         """ function that starts all the tests """
 
         # connect to Nova
@@ -90,16 +96,18 @@ class vmrunner():
         else:
             utils.log("%s Unexpected state in VM after run() %r" % (instance_id, instance.state))
         utils.add_record( {'id': instance_id, 'test_result': test_result, 'run_time': run_time, 'ping_time': ping_time}  )     
+        data = "%s, %s, %s, %s\n" % (instance_id, test_result, run_time, ping_time)
+        LOG.write(data)
         
 if __name__ == '__main__':
     try:
-        if len(sys.argv) > 3: 
-            ami = sys.argv[3]
+        if len(sys.argv) > 4: 
+            ami = sys.argv[4]
 	else: raise Exception()
         vm = vmrunner(ami)
-        vm.runner(int(sys.argv[1]), int(sys.argv[2]))
+        vm.runner(int(sys.argv[1]), int(sys.argv[2]), str(sys.argv[3]))
     except Exception:
-        print "Usage: ./vm_runner.py number_of_workers number_of_iterations ami"
+        print "Usage: ./vm_runner.py number_of_workers number_of_iterations logfile ami"
         print "Make sure you have sourced novarc to set env variables"
         exit(1)
     print "\n" 
