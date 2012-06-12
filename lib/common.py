@@ -73,10 +73,10 @@ def launch_vm(self,image):
     return reservation.instances[0]
 
 
-def block_till_running(self, instance):
+def block_till_running(self, instance, wait=300):
     #log("Waiting for instance %s to be in running state " % instance.id)
     result = False
-    for x in range(60):
+    for x in range(wait):
         instance.update()
         if instance.state == 'running':
             result = True

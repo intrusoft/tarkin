@@ -85,7 +85,7 @@ class vmrunner():
 
         if instance.state == 'pending':    # VM is on its way
             utils.log("%s state: pending" % instance_id)
-	    if utils.block_till_running(self,instance):
+	    if utils.block_till_running(self,instance,600):
                 run_time = utils.elapsed_time(start_time)
                 # ping till up
 		if utils.block_till_ping(self,instance,600):
