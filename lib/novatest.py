@@ -36,13 +36,13 @@ class NovaEC2Test(BaseTest):
     def get_image(self, ami_name):
         return self.ec2_conn.get_image(ami_name)                
 
-    def launch_instance(self, ami_name=None, inst_type=DEFAULT_INSTANCE_TYPE, key_name=None):
+    def launch_instance(self, ami_name=None, inst_type=DEFAULT_INSTANCE_TYPE, key_name=None, security_groups=None):
         if not ami_name:
             ami = self.get_first_ami()
         else:
             ami = self.get_image(ami_name)
 
-        reservation = ami.run(instance_type=inst_type, key_name=key_name)
+        reservation = ami.run(instance_type=inst_type, key_name=key_name, security_groups=security_groups)
         print reservation.instances[0]
         return reservation.instances[0]
 
@@ -81,6 +81,32 @@ class NovaEC2Test(BaseTest):
 
     def delete_key_pair(self, name):
         return self.ec2_conn.delete_key_pair(name)
+
+    def create_sg_group(self, name, desc=None):
+        return self.ec2_conn.create_security_group(name, desc)
+
+    def delete_sg_group(self, name):
+        return self.ec2_conn.delete_security_group(name)
+
+    def auth_sg_group(self, name, src_security_group_name=None, cidr_ip=None,
+                              ip_protocol=None, to_port=None, from_port=None):
+        return self.ec2_conn.authorize_security_group(name, 
+                                                 src_security_group_name=src_security_group_name, 
+                                                 cidr_ip=cidr_ip, 
+                                                 ip_protocol=ip_protocol,
+                                                 to_port=to_port, 
+                                                 from_port=from_port)
+    def list_sg_groups(self):
+        return self.ec2_conn.get_all_security_groups()
+
+    def wait_for_terminated(self, instance, timeout=300):
+        start = time.time()
+        while(time.time() <= start+timeout): 
+            if self.get_instance_status(instance) == 'terminated':
+                break
+            else:
+                time.sleep(1)
+
     
 if __name__ == '__main__':
     n = NovaEC2Test()
