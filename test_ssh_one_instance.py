@@ -6,13 +6,14 @@ class SSHOneInstance(SSHInstanceTest):
         _result = False
         keyname = self.get_new_key_pair()
         instance = self.setup_pingable_instance(keyname)
+        self.log("Launching instance")
         if instance:
            time.sleep(5)
            output = self.ssh_cmd_simple(instance, keyname, 'uptime')
            if output:
                if 'load average' in "\n".join(output):
                    _result = True
-           print output
+           self.log(output)
            
            self.terminate(instance)
            self.delete_key_pair(keyname)

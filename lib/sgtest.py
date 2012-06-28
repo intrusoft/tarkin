@@ -8,7 +8,6 @@ from sshutils import SSHCommand
 
 class SGTest(SSHInstanceTest):
     def __init__(self):
-        print "SGTest.__init__"
         SSHInstanceTest.__init__(self)
 
     def rndstr(self, sz=10):
@@ -36,14 +35,5 @@ class SGTest(SSHInstanceTest):
         return (good_name, bad_name, dest_name)
    
     
-if __name__ == '__main__':
-    g = SGTest()
-    (gd,bd,ds) = g.create_good_bad_dest()
-    time.sleep(5)
-    #g.auth_from_cidr(gd, '4.4.4.0/24', 'tcp', '22', '22')
-    g.auth_from_group(gd, bd, 'tcp', '23', '23')
-    #g.delete_group(gd)
-    #g.delete_group(bd)
-    g.delete_group(ds)
 
          

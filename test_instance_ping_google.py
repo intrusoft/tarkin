@@ -7,16 +7,17 @@ class InstancePingGoogle(SSHInstanceTest):
         _ping_ip_result = False
         _ping_dns_result = False
         keyname = self.get_new_key_pair()
+        self.log('Set up instance')
         instance = self.setup_pingable_instance(keyname)
         if instance:
            time.sleep(5)
            output = self.ssh_cmd_simple(instance, keyname, 'ping -c 1 8.8.8.8')
-           print output
+           self.log(output)
            if '1 receive' in "".join(output):
                _ping_ip_result = True
 
            output = self.ssh_cmd_simple(instance, keyname, 'ping -c 1 google-public-dns-a.google.com')           
-           print output
+           self.log(output)
            if '1 receive' in "".join(output):
                _ping_dns_result = True
 

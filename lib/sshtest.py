@@ -8,7 +8,6 @@ from sshutils import SSHCommand
 
 class SSHInstanceTest(NovaEC2Test):
     def __init__(self):
-        print "SSHInstanceTest.__init__"
         NovaEC2Test.__init__(self)
         self.kp_path = None
         self.connect_api()
@@ -23,32 +22,21 @@ class SSHInstanceTest(NovaEC2Test):
         """ This implementation waits till VM is pingable """
 
         # insert key shit
-        print "launch"
         instance = self.launch_instance(key_name=key_name)
         if self.block_until_running(instance) and self.block_until_ping(instance):
-            print "vm is pinging"
+            self.log('instance %s is pingable' % instance.id)
             return instance
         else:
-            print "vm not responding"
+            self.log('instance %s is NOT pingable' % instance.id)
             return None
 
     def ssh_cmd_simple(self, instance, key_name, cmd):
         ssh = SSHCommand('/tmp/%s.pem' % key_name)
+        self.log('Sennding command [%s] to %s' % (cmd, instance.private_ip_address))
         return ssh.cmdexec(instance.private_ip_address, cmd)
 
     # todo: cleanup the /tmp files        
     
-if __name__ == '__main__':
-    s = SSHInstanceTest()
-    kn = s.get_new_key_pair()
-    i = s.setup_pingable_instance(key_name=kn)
-    time.sleep(5)
-    print s.ssh_cmd_simple(i, kn, 'uptime')
-
-    #print "sleeping"
-    #time.sleep(60)
-    #print "terminate"
-    #i.terminate()
 
 
          

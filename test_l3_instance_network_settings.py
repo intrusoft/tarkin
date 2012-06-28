@@ -17,34 +17,36 @@ class L3InstanceNetworkSettings(SSHInstanceTest):
         ping_resule = False
 
         keyname = self.get_new_key_pair()
+        self.log("Set up instance")
         instance = self.setup_pingable_instance(keyname)
         if instance:
            time.sleep(5)
+           self.log("Query instance network settings")
            output = self.ssh_cmd_simple(instance, keyname, 'ifconfig eth0')
-           print output
+           self.log(output)
            if output:
                detected_ip = self._grab_pattern('inet addr:([0-9\.]+)', "".join(output))
-               print "detected_ip: %s " % detected_ip
+               self.log("detected_ip: %s " % detected_ip)
                detected_mask = self._grab_pattern('Mask:([0-9\.]+)', "".join(output))
-               print "detected_mask: %s " % detected_mask
+               self.log("detected_mask: %s " % detected_mask)
                detected_broadcast = self._grab_pattern('Bcast:([0-9\.]+)', "".join(output))
-               print "detected_broadcast: %s " % detected_broadcast
+               self.log("detected_broadcast: %s " % detected_broadcast)
                detected_mac = self._grab_pattern('HWaddr ([0-9a-fA-F\:]+)', "".join(output))
-               print "detected_mac: %s " % detected_mac
+               self.log("detected_mac: %s " % detected_mac)
            
+           self.log("Get routing table")
            output = self.ssh_cmd_simple(instance, keyname, 'route -n')
-           print output
+           self.log(output)
            if output:
                detected_default_gw = self._grab_pattern('\n0.0.0.0\s+([0-9\.]+)', "".join(output))
-               print "detected_default_gw: %s " % detected_default_gw
+               self.log("detected_default_gw: %s " % detected_default_gw)
                output = self.ssh_cmd_simple(instance, keyname, 'ping -c 1 %s' % detected_default_gw)           
-               print output
+               self.log(output)
                if '1 receive' in "".join(output):
-                   print "PINGED GW!"
+                   self.log('default gw pingable')
                    _ping_dns_result = True
 
            # do evals
-         
            _result = detected_ip == instance.private_ip_address
            self.add_result(test_name=self.__class__.__name__+'_correct_ip', result=_result)
             
@@ -67,15 +69,6 @@ class L3InstanceNetworkSettings(SSHInstanceTest):
 
            self.add_result(test_name=self.__class__.__name__+'_ping_gw', result=_ping_dns_result)           
 
-           # check netmask
-           # check broadcast
-           # check MAC Address
-
-           # check default route
-           # ping gateway
-           
-
-           
            self.terminate(instance)
            self.delete_key_pair(keyname)
            # delete keypair

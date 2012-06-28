@@ -11,8 +11,10 @@ class SGGoodBadSourceGroup(SGTest):
         _result_good_ssh_dest = False
         _result_bad_ssh_dest = False
 
+        self.log("Creating 3 security groups")
         (good_group, bad_group, dest_group) = self.create_good_bad_dest()
 
+        self.log("Setting security group rules")
         # allow SSH into source groups
         self.auth_from_cidr(good_group, '0.0.0.0/0', 'tcp', '22', '22')
         self.auth_from_cidr(bad_group, '0.0.0.0/0', 'tcp', '22', '22')
@@ -30,43 +32,46 @@ class SGGoodBadSourceGroup(SGTest):
         keyname = self.get_new_key_pair()
         
         # spin up VMs
+        self.log("Setting up 3 instances, with each security group")
         dest_instance = self.launch_instance(security_groups=[dest_group], key_name=keyname)
         bad_instance = self.launch_instance(security_groups=[bad_group], key_name=keyname)
         good_instance = self.launch_instance(security_groups=[good_group], key_name=keyname)
 
         # wait for VMs to come up
+        self.log("Wait for 3 instances to reach running state")
         if self.block_until_running(dest_instance) and \
             self.block_until_running(bad_instance) and \
             self.block_until_running(good_instance):
-            print "VMs are up!"
+            self.log("All VMs up")
             
         # wait for 2 VMs to ping
+        self.log("Wait for 2 source groups to be pingable")
         if self.block_until_ping(bad_instance) and \
-           self.block_until_ping(good_instance):
-           print "VMs can ping!"
+            self.block_until_ping(good_instance):
+            self.log("Both VMs can be pinged")       
 
         time.sleep(5)
         # ping from good to dest
         output = self.ssh_cmd_simple(good_instance, keyname, 'ping -c 1 %s' % dest_instance.private_ip_address)
-        print output
+        self.log(output)
         if '1 receive' in "".join(output):
             _result_good_ping_dest = True
 
         # ping from bad to dest
         output = self.ssh_cmd_simple(bad_instance, keyname, 'ping -c 1 %s' % dest_instance.private_ip_address)
-        print output
+        self.log(output)
         if '0 receive' in "".join(output):
             _result_bad_ping_dest = True
 
         # ssh into good to dest
         output = self.ssh_cmd_simple(good_instance, keyname, 'nc -v -d -v -z -w 1 %s 22' % dest_instance.private_ip_address)
-        print output
+        self.log(output)
         if 'succeeded' in "".join(output):
             _result_good_ssh_dest = True
             
         # ssh from bad to dest
         output = self.ssh_cmd_simple(bad_instance, keyname, 'nc -v -d -v -z -w 1 %s 22' % dest_instance.private_ip_address)
-        print output
+        self.log(output)
         if 'timed out' in "".join(output):
             _result_bad_ssh_dest = True
 
@@ -100,33 +105,6 @@ class SGGoodBadSourceGroup(SGTest):
 
         self.delete_key_pair(keyname)
 
-
-        """
-        _result = False
-        tmp_group = 'tmp_' + self.rndstr(6)
-        print "create group: %s" % tmp_group
-        self.create_group(tmp_group)
-
-        instance = self.launch_instance(security_groups=[tmp_group])
-
-        # run instance with group
-        
-        if self.block_until_running(instance):
-            if not self.block_until_ping(instance,timeout=25):
-                _result = True
-
-        self.add_result(test_name=self.__class__.__name__, result=_result)
-
-        self.terminate(instance)
-
-        for x in range(20):
-            if self.get_instance_status(instance) == 'terminated':
-                break
-            time.sleep(1)
-
-        # can't delete group when vm is still associated with it
-        self.delete_group(tmp_group)       
-        """
 
 if __name__ == '__main__':
     o = SGGoodBadSourceGroup()

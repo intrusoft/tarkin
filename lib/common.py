@@ -63,44 +63,6 @@ def checkping(instance):
 def elapsed_time(start):
     return int(time.time() - start)
 
-def launch_vm(self,image):
-    log("Launching VM")
-    reservation = image.run(instance_type=INSTANCE_TYPE)
-#TODO(jogo) add key_name
-#    reservation = image.run(instance_type=INSTANCE_TYPE,
-#                            key_name=KEYPAIR_NAME)
-
-    return reservation.instances[0]
-
-
-def block_till_running(self, instance, wait=300):
-    #log("Waiting for instance %s to be in running state " % instance.id)
-    result = False
-    for x in range(wait):
-        instance.update()
-        if instance.state == 'running':
-            result = True
-            break
-        elif instance.state == 'error':
-            break
-        time.sleep(1)
-    if result: log("%s state: running" % instance.id)
-    else: log("%s state: failed to reach running" % instance.id)
-    return result
-
-
-def block_till_ping(self, instance, wait=300):
-    #log("Waiting for instance %s to be pingable " % host)
-    result = False
-    for x in range(wait):
-        if checkping(instance):
-            result = True
-            break
-        time.sleep(1)
-    if result: log("%s state: pingable " % instance.id)
-    else: log("%s state: failed to reach ping" % instance.id)
-    return result
-
 # Other
 
 def wait_for_tests(number_of_tests):
@@ -112,3 +74,8 @@ def wait_for_tests(number_of_tests):
         if tests_run >= number_of_tests:
             break
         time.sleep(2)
+
+
+
+
+

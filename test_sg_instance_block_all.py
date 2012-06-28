@@ -7,13 +7,13 @@ class SGInstanceBlockAll(SGTest):
     def main(self):
         _result = False
         tmp_group = 'tmp_' + self.rndstr(6)
-        print "create group: %s" % tmp_group
+        self.log("create group: %s" % tmp_group)
         self.create_group(tmp_group)
 
+        self.log("Launch instance with new empy group")
         instance = self.launch_instance(security_groups=[tmp_group])
 
-        # run instance with group
-        
+        self.log("Wait for VM to go into running state, wait 25 seconds to ping")
         if self.block_until_running(instance):
             if not self.block_until_ping(instance,timeout=25):
                 _result = True
