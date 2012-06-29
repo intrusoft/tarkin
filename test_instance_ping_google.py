@@ -6,6 +6,7 @@ class InstancePingGoogle(SSHInstanceTest):
     def main(self):
         _ping_ip_result = False
         _ping_dns_result = False
+
         keyname = self.get_new_key_pair()
         self.log('Set up instance')
         instance = self.setup_pingable_instance(keyname)

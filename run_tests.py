@@ -1,6 +1,7 @@
 
 import glob
 import inspect
+import traceback
 
 class Runner:
     def run(self):
@@ -13,7 +14,14 @@ class Runner:
             for cname, c in classes:
                 if c.__module__.startswith('test_'):
                     tmp = c()
-                    tmp.main()
+                    try:
+                        tmp.main()
+                    except Exception, e:
+                        tmp.log(str(e))
+                        tb = traceback.format_exc()
+                        tmp.log(tb)
+                        tmp.add_result(test_name=tmp.__class__.__name__, result=False, test_error=True)
+                        print "# " + str(e)
                     tmp.emit_results()
         
 
