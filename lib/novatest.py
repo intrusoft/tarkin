@@ -82,6 +82,9 @@ class NovaEC2Test(BaseTest):
     def delete_key_pair(self, name):
         return self.ec2_conn.delete_key_pair(name)
 
+    def get_all_key_pairs(self):
+        return self.ec2_conn.get_all_key_pairs()
+
     def create_sg_group(self, name, desc=None):
         return self.ec2_conn.create_security_group(name, desc)
 
