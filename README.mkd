@@ -1,5 +1,31 @@
-# Tarkin
+# Tarkin - Nova Test Harness
 
-## Nova Test Harness
+## Functional Tests
+
+    * Run One Test
+
+        $ python test_l3_instance_network_settings.py
+
+    * Run All Tests
+
+        $ python run_tests.py
+
+
+## Performance Tests
+
+    * Run 2 workers concurrently each iterating 30 tests 
+
+        $ python perf_runner.py -t test_sg_create -i 30 -w 2
+
+    * Run 2 workers concurrently each iterating 30 times for two tests
+
+        $ python perf_runner.py -t test_sg_create,test_ssh_one_instance -i 30 -w 2 
+
+
+
+
+
+
+
 
 
