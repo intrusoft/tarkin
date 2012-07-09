@@ -1,5 +1,13 @@
 # Tarkin - Nova Test Harness
 
+
+## Setup Nova Credentials
+
+    * Source novarc
+
+        $ . novarc
+
+
 ## Functional Tests
 
     * Run One Test
