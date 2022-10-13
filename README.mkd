@@ -1,4 +1,4 @@
-# Tarkin - Nova Test Harness
+# Tarkin - Openstack Nova Test Harness
 
 
 ## Setup Nova Credentials
